@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Network Monitor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --border: rgba(255, 255, 255, 0.1);
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15), transparent 25%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(135deg, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+        }
+        
+        p.subtitle {
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 15px var(--accent-glow);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .data-label {
+            color: var(--text-muted);
+        }
+
+        .data-value {
+            font-weight: 600;
+            font-family: monospace;
+            font-size: 1.05rem;
+        }
+
+        .highlight {
+            color: #38bdf8;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 50px;
+            font-size: 1.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .scrollable {
+            max-height: 250px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--bg-color);
+        }
+
+        .scrollable::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        .scrollable::-webkit-scrollbar-thumb {
+            background-color: var(--accent);
+            border-radius: 4px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--success);
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1><span class="live-indicator"></span> Real-Time Network Monitor</h1>
+        <p class="subtitle">Java Spring Boot & C++ JNA Architecture</p>
+    </header>
+
+    <div id="loading" class="loading">Fetching network data from C++ Engine...</div>
+
+    <div id="dashboard" class="dashboard" style="display: none;">
+        
+        <div class="card">
+            <h2>🌐 Network Address</h2>
+            <div class="data-row"><span class="data-label">IPv4</span> <span class="data-value highlight" id="val-ipv4">-</span></div>
+            <div class="data-row"><span class="data-label">Subnet</span> <span class="data-value" id="val-subnet">-</span></div>
+            <div class="data-row"><span class="data-label">Gateway</span> <span class="data-value" id="val-gateway">-</span></div>
+            <div class="data-row"><span class="data-label">MAC</span> <span class="data-value" id="val-mac">-</span></div>
+            <div class="data-row"><span class="data-label">DNS</span> <span class="data-value" id="val-dns">-</span></div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ Performance</h2>
+            <div class="data-row"><span class="data-label">Download</span> <span class="data-value highlight" id="val-download" style="color: #4ade80;">-</span></div>
+            <div class="data-row"><span class="data-label">Upload</span> <span class="data-value highlight" id="val-upload" style="color: #f472b6;">-</span></div>
+            <div class="data-row" style="margin-top: 20px;"><span class="data-label">Ping</span> <span class="data-value" id="val-ping">-</span></div>
+        </div>
+
+        <div class="card">
+            <h2>📦 Packets</h2>
+            <div class="data-row"><span class="data-label">In Packets</span> <span class="data-value" id="val-inPackets">-</span></div>
+            <div class="data-row"><span class="data-label">Out Packets</span> <span class="data-value" id="val-outPackets">-</span></div>
+            <div class="data-row"><span class="data-label">In Errors</span> <span class="data-value" id="val-inErrors">-</span></div>
+            <div class="data-row"><span class="data-label">Out Errors</span> <span class="data-value" id="val-outErrors">-</span></div>
+            <div class="data-row"><span class="data-label">Loss Rate</span> <span class="data-value highlight" id="val-lossRate">-</span></div>
+        </div>
+
+        <div class="card">
+            <h2>🔗 Connections</h2>
+            <div class="data-row"><span class="data-label">TCP Conns</span> <span class="data-value" id="val-tcpCount">-</span></div>
+            <div class="data-row"><span class="data-label">UDP Conns</span> <span class="data-value" id="val-udpCount">-</span></div>
+        </div>
+
+        <div class="card full-width">
+            <h2>📡 Network Interfaces</h2>
+            <div class="scrollable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Interface Name</th>
+                            <th>Status</th>
+                            <th>Speed (Mbps)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="interfaces-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <h2>🖥️ Processes using Network</h2>
+            <div class="scrollable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PID</th>
+                            <th>Process Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="processes-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    async function fetchData() {
+        try {
+            const response = await fetch('/api/network-data');
+            const data = await response.json();
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'grid';
+
+            const keys = ['ipv4', 'subnet', 'gateway', 'mac', 'dns', 'download', 'upload', 'ping', 'inPackets', 'outPackets', 'inErrors', 'outErrors', 'tcpCount', 'udpCount'];
+            
+            keys.forEach(key => {
+                if (document.getElementById('val-' + key)) {
+                    document.getElementById('val-' + key).textContent = data[key];
+                }
+            });
+
+            document.getElementById('val-lossRate').textContent = data.lossRate + '%';
+            
+            const ifaceTbody = document.getElementById('interfaces-tbody');
+            ifaceTbody.innerHTML = '';
+            if (data.interfaces && data.interfaces.length > 0) {
+                data.interfaces.forEach(iface => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${iface.name}</td>
+                        <td style="color: ${iface.status === 'Operational' ? '#4ade80' : '#f87171'}">${iface.status}</td>
+                        <td>${iface.speed_mbps}</td>
+                    `;
+                    ifaceTbody.appendChild(row);
+                });
+            }
+
+            const procTbody = document.getElementById('processes-tbody');
+            procTbody.innerHTML = '';
+            if (data.processes && data.processes.length > 0) {
+                data.processes.forEach(proc => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="font-family: monospace;">${proc.pid}</td>
+                        <td>${proc.name}</td>
+                    `;
+                    procTbody.appendChild(row);
+                });
+            }
+            
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+        }
+    }
+
+    fetchData();
+    
+    setInterval(fetchData, 8000);
+</script>
+
+</body>
+</html>

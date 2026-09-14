@@ -9,233 +9,43 @@
 #include <windows.h>
 #include <netioapi.h>
 #include <psapi.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <string>
+#include <vector>
+
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "psapi.lib")
 #pragma warning(disable:4996)
 
-void print_boxed_title(const char* title) {
-    int len = strlen(title);
-    int width = 32;
-    for (int i = 0; i < width; i++) printf("¡á");
-    printf("\n¡á %s", title);
-    for (int i = 0; i < width - len - 3; i++) printf(" ");
-    printf("¡á\n");
-    for (int i = 0; i < width; i++) printf("¡á");
-    printf("\n");
-}
+namespace py = pybind11;
 
-void get_network_speed(char* downloadStr, char* uploadStr) {
-    PMIB_IFTABLE pIfTable = NULL;
-    DWORD dwSize = 0, dwRetVal = 0;
-    pIfTable = (MIB_IFTABLE*)malloc(sizeof(MIB_IFTABLE));
-    if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+py::dict get_full_network_data() {
+    py::dict data;
 
-    dwSize = sizeof(MIB_IFTABLE);
-    if (GetIfTable(pIfTable, &dwSize, FALSE) == ERROR_INSUFFICIENT_BUFFER) {
-        free(pIfTable);
-        pIfTable = (MIB_IFTABLE*)malloc(dwSize);
-        if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
-    }
-
-    dwRetVal = GetIfTable(pIfTable, &dwSize, FALSE);
-    if (dwRetVal == NO_ERROR) {
-        for (DWORD i = 0; i < pIfTable->dwNumEntries; i++) {
-            MIB_IFROW row = pIfTable->table[i];
-            if (row.dwOperStatus == IF_OPER_STATUS_OPERATIONAL &&
-                (strstr((char*)row.bDescr, "Wi-Fi") || strstr((char*)row.bDescr, "Ethernet"))) {
-
-                DWORD rxOld = row.dwInOctets;
-                DWORD txOld = row.dwOutOctets;
-                Sleep(3000);
-                dwRetVal = GetIfTable(pIfTable, &dwSize, FALSE);
-                if (dwRetVal != NO_ERROR) break;
-
-                row = pIfTable->table[i];
-                DWORD rxNew = row.dwInOctets;
-                DWORD txNew = row.dwOutOctets;
-
-                DWORD downloadKBps = (rxNew > rxOld) ? (rxNew - rxOld) / 1024 : 0;
-                DWORD uploadKBps = (txNew > txOld) ? (txNew - txOld) / 1024 : 0;
-
-                sprintf(downloadStr, "%lu KB/s", downloadKBps);
-                sprintf(uploadStr, "%lu KB/s", uploadKBps);
-
-                free(pIfTable);
-                return;
-            }
-        }
-        strcpy(downloadStr, "0 KB/s");
-        strcpy(uploadStr, "0 KB/s");
-    }
-    else {
-        strcpy(downloadStr, "N/A");
-        strcpy(uploadStr, "N/A");
-    }
-    free(pIfTable);
-}
-
-void get_ping_result(char* resultStr) {
-    FILE* fp;
-    char buffer[256];
-    int total = 0, min = 9999, max = 0;
-
-    for (int i = 0; i < 3; i++) {
-        fp = _popen("ping -n 1 8.8.8.8", "r");
-        if (!fp) { strcpy(resultStr, "Ping ½ÇÆÐ"); return; }
-
-        int found = 0;
-        while (fgets(buffer, sizeof(buffer), fp)) {
-            char* timePtr = strstr(buffer, "time=");
-            if (!timePtr) timePtr = strstr(buffer, "½Ã°£=");
-            if (timePtr) {
-                int time;
-                if (sscanf(timePtr, "time=%d", &time) == 1 || sscanf(timePtr, "½Ã°£=%d", &time) == 1) {
-                    total += time;
-                    if (time < min) min = time;
-                    if (time > max) max = time;
-                    found = 1;
-                }
-            }
-        }
-        _pclose(fp);
-        if (!found) { strcpy(resultStr, "Ping ½ÇÆÐ"); return; }
-        Sleep(300);
-    }
-    sprintf(resultStr, "ÃÖ¼Ò = %dms, ÃÖ´ë = %dms, Æò±Õ = %dms", min, max, total / 3);
-}
-
-void get_packet_stats(ULONG* inPackets, ULONG* outPackets, ULONG* inErrors, ULONG* outErrors, double* lossRate) {
-    PMIB_IFTABLE pIfTable = NULL;
-    DWORD dwSize = sizeof(MIB_IFTABLE);
-    pIfTable = (MIB_IFTABLE*)malloc(dwSize);
-    if (!pIfTable) return;
-
-    if (GetIfTable(pIfTable, &dwSize, FALSE) == ERROR_INSUFFICIENT_BUFFER) {
-        free(pIfTable);
-        pIfTable = (MIB_IFTABLE*)malloc(dwSize);
-        if (!pIfTable) return;
-    }
-
-    if (GetIfTable(pIfTable, &dwSize, FALSE) == NO_ERROR) {
-        for (DWORD i = 0; i < pIfTable->dwNumEntries; i++) {
-            MIB_IFROW row = pIfTable->table[i];
-            if (row.dwOperStatus == IF_OPER_STATUS_OPERATIONAL &&
-                (strstr((char*)row.bDescr, "Wi-Fi") || strstr((char*)row.bDescr, "Ethernet"))) {
-                *inPackets = row.dwInUcastPkts;
-                *outPackets = row.dwOutUcastPkts;
-                *inErrors = row.dwInErrors;
-                *outErrors = row.dwOutErrors;
-
-                ULONG totalPkts = row.dwInUcastPkts + row.dwOutUcastPkts;
-                ULONG totalErrors = row.dwInErrors + row.dwOutErrors;
-                if (totalPkts > 0) {
-                    *lossRate = ((double)totalErrors / totalPkts) * 100.0;
-                }
-                else {
-                    *lossRate = 0.0;
-                }
-                break;
-            }
-        }
-    }
-    free(pIfTable);
-}
-
-DWORD get_tcp_connection_count() {
-    PMIB_TCPTABLE tcpTable;
-    DWORD size = 0;
-    GetTcpTable(NULL, &size, TRUE);
-    tcpTable = (PMIB_TCPTABLE)malloc(size);
-    if (!tcpTable) return 0;
-    if (GetTcpTable(tcpTable, &size, TRUE) == NO_ERROR) {
-        DWORD count = tcpTable->dwNumEntries;
-        free(tcpTable);
-        return count;
-    }
-    free(tcpTable);
-    return 0;
-}
-
-DWORD get_udp_connection_count() {
-    PMIB_UDPTABLE udpTable;
-    DWORD size = 0;
-    GetUdpTable(NULL, &size, TRUE);
-    udpTable = (PMIB_UDPTABLE)malloc(size);
-    if (!udpTable) return 0;
-    if (GetUdpTable(udpTable, &size, TRUE) == NO_ERROR) {
-        DWORD count = udpTable->dwNumEntries;
-        free(udpTable);
-        return count;
-    }
-    free(udpTable);
-    return 0;
-}
-
-void print_interface_info() {
+    py::list interfaces;
     PMIB_IFTABLE pIfTable;
     DWORD dwSize = 0;
     GetIfTable(NULL, &dwSize, FALSE);
     pIfTable = (MIB_IFTABLE*)malloc(dwSize);
-    if (!pIfTable) return;
-    if (GetIfTable(pIfTable, &dwSize, FALSE) == NO_ERROR) {
-        printf("¡á³×Æ®¿öÅ© ÀÎÅÍÆäÀÌ½º¡á\n");
-        printf("ÀÎÅÍÆäÀÌ½º ¼ö: %lu\n", pIfTable->dwNumEntries);
-        for (DWORD i = 0; i < pIfTable->dwNumEntries; i++) {
-            MIB_IFROW row = pIfTable->table[i];
-            printf("[%lu] %s\n", i + 1, row.bDescr);
-            printf("  »óÅÂ: %s\n",
-                row.dwOperStatus == IF_OPER_STATUS_OPERATIONAL ? "¿¬°áµÊ" :
-                row.dwOperStatus == IF_OPER_STATUS_DISCONNECTED ? "¿¬°á ¾È µÊ" : "±âÅ¸");
-            printf("  ¼Óµµ: %.2f Mbps\n", row.dwSpeed / 1000000.0);
+    if (pIfTable) {
+        if (GetIfTable(pIfTable, &dwSize, FALSE) == NO_ERROR) {
+            for (DWORD i = 0; i < pIfTable->dwNumEntries; i++) {
+                MIB_IFROW row = pIfTable->table[i];
+                py::dict iface;
+                iface["name"] = std::string((char*)row.bDescr);
+                iface["status"] = (row.dwOperStatus == IF_OPER_STATUS_OPERATIONAL) ? "Operational" : 
+                                  (row.dwOperStatus == IF_OPER_STATUS_DISCONNECTED) ? "Disconnected" : "Other";
+                iface["speed_mbps"] = row.dwSpeed / 1000000.0;
+                interfaces.append(iface);
+            }
         }
-        printf("\n");
+        free(pIfTable);
     }
-    free(pIfTable);
-}
+    data["interfaces"] = interfaces;
 
-void print_process_network_usage() {
-    printf("¡áÇÁ·Î¼¼½ºº° ³×Æ®¿öÅ© »ç¿ë·®¡á\n");
-
-    DWORD size = 0;
-    GetExtendedTcpTable(NULL, &size, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
-    PMIB_TCPTABLE_OWNER_PID tableOld = (PMIB_TCPTABLE_OWNER_PID)malloc(size);
-    GetExtendedTcpTable(tableOld, &size, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
-
-    Sleep(3000);
-
-    PMIB_TCPTABLE_OWNER_PID tableNew = (PMIB_TCPTABLE_OWNER_PID)malloc(size);
-    GetExtendedTcpTable(tableNew, &size, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
-
-    for (DWORD i = 0; i < tableNew->dwNumEntries; i++) {
-        DWORD pid = tableNew->table[i].dwOwningPid;
-
-        HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
-        char procName[MAX_PATH] = "<¾Ë ¼ö ¾øÀ½>";
-        if (hProc) {
-            GetModuleFileNameExA(hProc, NULL, procName, MAX_PATH);
-            CloseHandle(hProc);
-        }
-
-        // ¾Ë ¼ö ¾øÀ½Àº Ãâ·ÂÇÏÁö ¾ÊÀ½
-        if (strcmp(procName, "<¾Ë ¼ö ¾øÀ½>") == 0)
-            continue;
-
-        // ½ÇÁ¦ ¹ÙÀÌÆ® °è»êÀº TCP Åë°è API ÇÊ¿ä (¿©±â¼­´Â ¿¬°á °³¼ö¸¸ Ç¥½Ã)
-        printf("PID: %lu, ÇÁ·Î¼¼½º: %s, TCP ¿¬°á: %lu\n", pid, procName, 1UL);
-    }
-
-    free(tableOld);
-    free(tableNew);
-}
-
-void print_network_info() {
-    print_boxed_title("½Ç½Ã°£ ³×Æ®¿öÅ© ¸ð´ÏÅÍ¸µ µµ±¸");
-    printf("Á¾·áÇÏ·Á¸é 0¹øÀ» ÀÔ·ÂÇÏ¼¼¿ä.\n\n");
-
-    print_interface_info();
-
-    char ipv4[16] = "", subnet[16] = "", gateway[16] = "", mac[32] = "", dns[16] = "";
+    std::string ipv4 = "", subnet = "", gateway = "", mac = "", dns = "";
     DWORD bufLen = sizeof(IP_ADAPTER_INFO);
     IP_ADAPTER_INFO* adapterInfo = (IP_ADAPTER_INFO*)malloc(bufLen);
     if (GetAdaptersInfo(adapterInfo, &bufLen) == ERROR_BUFFER_OVERFLOW) {
@@ -244,12 +54,21 @@ void print_network_info() {
     }
     if (GetAdaptersInfo(adapterInfo, &bufLen) == NO_ERROR) {
         IP_ADAPTER_INFO* adapter = adapterInfo;
-        strcpy(ipv4, adapter->IpAddressList.IpAddress.String);
-        strcpy(subnet, adapter->IpAddressList.IpMask.String);
-        strcpy(gateway, adapter->GatewayList.IpAddress.String);
-        sprintf(mac, "%02X-%02X-%02X-%02X-%02X-%02X",
-            adapter->Address[0], adapter->Address[1], adapter->Address[2],
-            adapter->Address[3], adapter->Address[4], adapter->Address[5]);
+        while (adapter) {
+            if (strcmp(adapter->IpAddressList.IpAddress.String, "0.0.0.0") != 0 &&
+                strcmp(adapter->GatewayList.IpAddress.String, "0.0.0.0") != 0) {
+                ipv4 = adapter->IpAddressList.IpAddress.String;
+                subnet = adapter->IpAddressList.IpMask.String;
+                gateway = adapter->GatewayList.IpAddress.String;
+                char macBuf[32];
+                sprintf(macBuf, "%02X-%02X-%02X-%02X-%02X-%02X",
+                    adapter->Address[0], adapter->Address[1], adapter->Address[2],
+                    adapter->Address[3], adapter->Address[4], adapter->Address[5]);
+                mac = macBuf;
+                break;
+            }
+            adapter = adapter->Next;
+        }
     }
     free(adapterInfo);
 
@@ -260,58 +79,189 @@ void print_network_info() {
         fixedInfo = (FIXED_INFO*)malloc(fixedInfoLen);
     }
     if (GetNetworkParams(fixedInfo, &fixedInfoLen) == NO_ERROR) {
-        strcpy(dns, fixedInfo->DnsServerList.IpAddress.String);
+        dns = fixedInfo->DnsServerList.IpAddress.String;
     }
     free(fixedInfo);
 
-    char down[32], up[32], ping[64];
-    get_network_speed(down, up);
-    get_ping_result(ping);
+    data["ipv4"] = ipv4;
+    data["subnet"] = subnet;
+    data["gateway"] = gateway;
+    data["mac"] = mac;
+    data["dns"] = dns;
 
-    ULONG inPackets, outPackets, inErrors, outErrors;
-    double lossRate;
-    get_packet_stats(&inPackets, &outPackets, &inErrors, &outErrors, &lossRate);
-
-    DWORD tcpCount = get_tcp_connection_count();
-    DWORD udpCount = get_udp_connection_count();
-
-    printf("¡á³×Æ®¿öÅ© ÁÖ¼Ò¡á\n");
-    printf("IPv4      ¡æ %s\n", ipv4);
-    printf("¼­ºê³Ý    ¡æ %s\n", subnet);
-    printf("°ÔÀÌÆ®¿þÀÌ¡æ %s\n", gateway);
-    printf("MAC       ¡æ %s\n", mac);
-    printf("DNS       ¡æ %s\n\n", dns);
-
-    printf("¡á³×Æ®¿öÅ© ¼º´É¡á\n");
-    printf("´Ù¿î·Îµå: %s, ¾÷·Îµå: %s\n", down, up);
-    printf("ÇÎ: %s\n\n", ping);
-
-    printf("¡áÆÐÅ¶¡á\n");
-    printf("¼ö½Å ÆÐÅ¶ ¼ö: %lu\n", inPackets);
-    printf("¼Û½Å ÆÐÅ¶ ¼ö: %lu\n", outPackets);
-    printf("¼ö½Å ¿À·ù ¼ö: %lu\n", inErrors);
-    printf("¼Û½Å ¿À·ù ¼ö: %lu\n", outErrors);
-    printf("ÆÐÅ¶ ¼Õ½Ç·ü: %.2f%%\n\n", lossRate);
-
-    printf("¡á¿¬°á »óÅÂ¡á\n");
-    printf("TCP ¿¬°á ¼ö: %lu\n", tcpCount);
-    printf("UDP ¿¬°á ¼ö: %lu\n\n", udpCount);
-
-    print_process_network_usage();
-}
-
-int main(void) {
-    print_network_info();
-    int choice;
-    while (1) {
-        scanf("%d", &choice);
-        if (choice == 0) {
-            printf("ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.\n");
-            break;
+    std::string downloadStr = "0 KB/s", uploadStr = "0 KB/s";
+    pIfTable = (MIB_IFTABLE*)malloc(sizeof(MIB_IFTABLE));
+    dwSize = sizeof(MIB_IFTABLE);
+    if (pIfTable && GetIfTable(pIfTable, &dwSize, FALSE) == ERROR_INSUFFICIENT_BUFFER) {
+        free(pIfTable);
+        pIfTable = (MIB_IFTABLE*)malloc(dwSize);
+    }
+    if (pIfTable && GetIfTable(pIfTable, &dwSize, FALSE) == NO_ERROR) {
+        DWORD bestIndex = 0;
+        DWORD maxTraffic = 0;
+        for (DWORD i = 0; i < pIfTable->dwNumEntries; i++) {
+            MIB_IFROW row = pIfTable->table[i];
+            if (row.dwOperStatus == IF_OPER_STATUS_OPERATIONAL &&
+                (strstr((char*)row.bDescr, "Wi-Fi") || strstr((char*)row.bDescr, "Ethernet")) &&
+                !strstr((char*)row.bDescr, "VirtualBox") && !strstr((char*)row.bDescr, "VMware")) {
+                if (row.dwInOctets > maxTraffic) {
+                    maxTraffic = row.dwInOctets;
+                    bestIndex = i;
+                }
+            }
         }
-        else {
-            printf("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù. 0¹ø¸¸ ÀÔ·Â °¡´ÉÇÕ´Ï´Ù.\n");
+        
+        MIB_IFROW row = pIfTable->table[bestIndex];
+        DWORD rxOld = row.dwInOctets;
+        DWORD txOld = row.dwOutOctets;
+        Sleep(3000);
+        if (GetIfTable(pIfTable, &dwSize, FALSE) == NO_ERROR) {
+            row = pIfTable->table[bestIndex];
+            DWORD rxNew = row.dwInOctets;
+            DWORD txNew = row.dwOutOctets;
+            DWORD downloadKBps = (rxNew > rxOld) ? (rxNew - rxOld) / 1024 : 0;
+            DWORD uploadKBps = (txNew > txOld) ? (txNew - txOld) / 1024 : 0;
+            char dBuf[32], uBuf[32];
+            sprintf(dBuf, "%lu KB/s", downloadKBps);
+            sprintf(uBuf, "%lu KB/s", uploadKBps);
+            downloadStr = dBuf;
+            uploadStr = uBuf;
         }
     }
-    return 0;
+    if (pIfTable) free(pIfTable);
+
+    data["download"] = downloadStr;
+    data["upload"] = uploadStr;
+
+    std::string pingStr = "Ping Error";
+    FILE* fp;
+    char buffer[256];
+    int total = 0, min = 9999, max = 0;
+    for (int i = 0; i < 3; i++) {
+        fp = _popen("ping -n 1 8.8.8.8", "r");
+        if (fp) {
+            int found = 0;
+            while (fgets(buffer, sizeof(buffer), fp)) {
+                char* timePtr = strstr(buffer, "time=");
+                if (!timePtr) timePtr = strstr(buffer, "ì‹œê°„=");
+                if (timePtr) {
+                    int time;
+                    if (sscanf(timePtr, "time=%d", &time) == 1 || sscanf(timePtr, "ì‹œê°„=%d", &time) == 1) {
+                        total += time;
+                        if (time < min) min = time;
+                        if (time > max) max = time;
+                        found = 1;
+                    }
+                }
+            }
+            _pclose(fp);
+            if (found) Sleep(300);
+        }
+    }
+    if (min != 9999) {
+        char pBuf[128];
+        sprintf(pBuf, "Min=%dms, Max=%dms, Avg=%dms", min, max, total / 3);
+        pingStr = pBuf;
+    }
+    data["ping"] = pingStr;
+
+    ULONG inPackets = 0, outPackets = 0, inErrors = 0, outErrors = 0;
+    double lossRate = 0.0;
+    pIfTable = (MIB_IFTABLE*)malloc(sizeof(MIB_IFTABLE));
+    dwSize = sizeof(MIB_IFTABLE);
+    if (pIfTable && GetIfTable(pIfTable, &dwSize, FALSE) == ERROR_INSUFFICIENT_BUFFER) {
+        free(pIfTable);
+        pIfTable = (MIB_IFTABLE*)malloc(dwSize);
+    }
+    if (pIfTable && GetIfTable(pIfTable, &dwSize, FALSE) == NO_ERROR) {
+        DWORD bestIndex = 0;
+        DWORD maxTraffic = 0;
+        for (DWORD i = 0; i < pIfTable->dwNumEntries; i++) {
+            MIB_IFROW row = pIfTable->table[i];
+            if (row.dwOperStatus == IF_OPER_STATUS_OPERATIONAL &&
+                (strstr((char*)row.bDescr, "Wi-Fi") || strstr((char*)row.bDescr, "Ethernet")) &&
+                !strstr((char*)row.bDescr, "VirtualBox") && !strstr((char*)row.bDescr, "VMware")) {
+                if (row.dwInOctets > maxTraffic) {
+                    maxTraffic = row.dwInOctets;
+                    bestIndex = i;
+                }
+            }
+        }
+        
+        MIB_IFROW row = pIfTable->table[bestIndex];
+        inPackets = row.dwInUcastPkts;
+        outPackets = row.dwOutUcastPkts;
+        inErrors = row.dwInErrors;
+        outErrors = row.dwOutErrors;
+        ULONG totalPkts = row.dwInUcastPkts + row.dwOutUcastPkts;
+        ULONG totalErrors = row.dwInErrors + row.dwOutErrors;
+        if (totalPkts > 0) lossRate = ((double)totalErrors / totalPkts) * 100.0;
+    }
+    if (pIfTable) free(pIfTable);
+    
+    data["inPackets"] = inPackets;
+    data["outPackets"] = outPackets;
+    data["inErrors"] = inErrors;
+    data["outErrors"] = outErrors;
+    data["lossRate"] = lossRate;
+
+    DWORD tcpCount = 0;
+    PMIB_TCPTABLE tcpTable;
+    DWORD tcpSize = 0;
+    GetTcpTable(NULL, &tcpSize, TRUE);
+    tcpTable = (PMIB_TCPTABLE)malloc(tcpSize);
+    if (tcpTable && GetTcpTable(tcpTable, &tcpSize, TRUE) == NO_ERROR) {
+        tcpCount = tcpTable->dwNumEntries;
+    }
+    if (tcpTable) free(tcpTable);
+    data["tcpCount"] = tcpCount;
+
+    DWORD udpCount = 0;
+    PMIB_UDPTABLE udpTable;
+    DWORD udpSize = 0;
+    GetUdpTable(NULL, &udpSize, TRUE);
+    udpTable = (PMIB_UDPTABLE)malloc(udpSize);
+    if (udpTable && GetUdpTable(udpTable, &udpSize, TRUE) == NO_ERROR) {
+        udpCount = udpTable->dwNumEntries;
+    }
+    if (udpTable) free(udpTable);
+    data["udpCount"] = udpCount;
+
+    py::list processes;
+    DWORD extSize = 0;
+    GetExtendedTcpTable(NULL, &extSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
+    PMIB_TCPTABLE_OWNER_PID tableOld = (PMIB_TCPTABLE_OWNER_PID)malloc(extSize);
+    if (tableOld) GetExtendedTcpTable(tableOld, &extSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0);
+
+    Sleep(3000);
+
+    PMIB_TCPTABLE_OWNER_PID tableNew = (PMIB_TCPTABLE_OWNER_PID)malloc(extSize);
+    if (tableNew && GetExtendedTcpTable(tableNew, &extSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_ALL, 0) == NO_ERROR) {
+        for (DWORD i = 0; i < tableNew->dwNumEntries; i++) {
+            DWORD pid = tableNew->table[i].dwOwningPid;
+            HANDLE hProc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+            char procName[MAX_PATH] = "Unknown";
+            if (hProc) {
+                DWORD size = MAX_PATH;
+                QueryFullProcessImageNameA(hProc, 0, procName, &size);
+                CloseHandle(hProc);
+            }
+            if (strcmp(procName, "Unknown") != 0) {
+                py::dict proc;
+                proc["pid"] = pid;
+                proc["name"] = std::string(procName);
+                processes.append(proc);
+            }
+        }
+    }
+    if (tableOld) free(tableOld);
+    if (tableNew) free(tableNew);
+
+    data["processes"] = processes;
+
+    return data;
+}
+
+PYBIND11_MODULE(network_monitor, m) {
+    m.def("get_data", &get_full_network_data);
 }

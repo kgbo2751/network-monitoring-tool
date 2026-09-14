@@ -1,0 +1,135 @@
+﻿C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:32:22: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   32 |     if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+      |                      ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:32:22: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   32 |     if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+      |                      ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:32:50: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   32 |     if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+      |                                                  ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:32:50: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   32 |     if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+      |                                                  ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:38:26: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   38 |         if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+      |                          ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:38:26: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   38 |         if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+      |                          ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:38:54: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   38 |         if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+      |                                                      ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:38:54: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   38 |         if (!pIfTable) { strcpy(downloadStr, "N/A"); strcpy(uploadStr, "N/A"); return; }
+      |                                                      ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:68:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   68 |         strcpy(downloadStr, "0 KB/s");
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:68:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   68 |         strcpy(downloadStr, "0 KB/s");
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:69:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   69 |         strcpy(uploadStr, "0 KB/s");
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:69:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   69 |         strcpy(uploadStr, "0 KB/s");
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:72:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   72 |         strcpy(downloadStr, "N/A");
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:72:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   72 |         strcpy(downloadStr, "N/A");
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:73:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   73 |         strcpy(uploadStr, "N/A");
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:73:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   73 |         strcpy(uploadStr, "N/A");
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:85:20: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+   85 |         if (!fp) { strcpy(resultStr, "Ping ����"); return; }
+      |                    ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:85:20: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+   85 |         if (!fp) { strcpy(resultStr, "Ping ����"); return; }
+      |                    ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:102:23: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+  102 |         if (!found) { strcpy(resultStr, "Ping ����"); return; }
+      |                       ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:102:23: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+  102 |         if (!found) { strcpy(resultStr, "Ping ����"); return; }
+      |                       ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:247:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+  247 |         strcpy(ipv4, adapter->IpAddressList.IpAddress.String);
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:247:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+  247 |         strcpy(ipv4, adapter->IpAddressList.IpAddress.String);
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:248:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+  248 |         strcpy(subnet, adapter->IpAddressList.IpMask.String);
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:248:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+  248 |         strcpy(subnet, adapter->IpAddressList.IpMask.String);
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:249:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+  249 |         strcpy(gateway, adapter->GatewayList.IpAddress.String);
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:249:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+  249 |         strcpy(gateway, adapter->GatewayList.IpAddress.String);
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:263:9: warning: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy]
+  263 |         strcpy(dns, fixedInfo->DnsServerList.IpAddress.String);
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:263:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+  263 |         strcpy(dns, fixedInfo->DnsServerList.IpAddress.String);
+      |         ^~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:290:5: warning: 2nd function call argument is an uninitialized value [clang-analyzer-core.CallAndMessage]
+  290 |     printf("���� ��Ŷ ��: %lu\n", inPackets);
+      |     ^
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:304:5: note: Calling 'print_network_info'
+  304 |     print_network_info();
+      |     ^~~~~~~~~~~~~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:241:9: note: Assuming the condition is false
+  241 |     if (GetAdaptersInfo(adapterInfo, &bufLen) == ERROR_BUFFER_OVERFLOW) {
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:241:5: note: Taking false branch
+  241 |     if (GetAdaptersInfo(adapterInfo, &bufLen) == ERROR_BUFFER_OVERFLOW) {
+      |     ^
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:245:9: note: Assuming the condition is false
+  245 |     if (GetAdaptersInfo(adapterInfo, &bufLen) == NO_ERROR) {
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:245:5: note: Taking false branch
+  245 |     if (GetAdaptersInfo(adapterInfo, &bufLen) == NO_ERROR) {
+      |     ^
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:258:9: note: Assuming the condition is false
+  258 |     if (GetNetworkParams(fixedInfo, &fixedInfoLen) == ERROR_BUFFER_OVERFLOW) {
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:258:5: note: Taking false branch
+  258 |     if (GetNetworkParams(fixedInfo, &fixedInfoLen) == ERROR_BUFFER_OVERFLOW) {
+      |     ^
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:262:9: note: Assuming the condition is false
+  262 |     if (GetNetworkParams(fixedInfo, &fixedInfoLen) == NO_ERROR) {
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:262:5: note: Taking false branch
+  262 |     if (GetNetworkParams(fixedInfo, &fixedInfoLen) == NO_ERROR) {
+      |     ^
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:271:11: note: 'inPackets' declared without an initial value
+  271 |     ULONG inPackets, outPackets, inErrors, outErrors;
+      |           ^~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:273:5: note: Calling 'get_packet_stats'
+  273 |     get_packet_stats(&inPackets, &outPackets, &inErrors, &outErrors, &lossRate);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:112:9: note: Assuming 'pIfTable' is null
+  112 |     if (!pIfTable) return;
+      |         ^~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:112:5: note: Taking true branch
+  112 |     if (!pIfTable) return;
+      |     ^
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:112:20: note: Returning without writing to '*inPackets'
+  112 |     if (!pIfTable) return;
+      |                    ^
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:273:5: note: Returning from 'get_packet_stats'
+  273 |     get_packet_stats(&inPackets, &outPackets, &inErrors, &outErrors, &lossRate);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kgbo2\Downloads\Development\Project_Portfolio\network-monitoring-tool\network-monitoring-tool\C_Real_Time_Network_Tool\main.cpp:290:5: note: 2nd function call argument is an uninitialized value
+  290 |     printf("���� ��Ŷ ��: %lu\n", inPackets);
+      |     ^                            ~~~~~~~~~

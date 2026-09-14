@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "C:\\Users\\kgbo2\\Downloads\\Development\\Project_Portfolio\\network-monitoring-tool\\network-monitoring-tool\\C_Real_Time_Network_Tool",
+    "command": "\"C:\\WINDOWS\\system32\\CL.exe\" \/c \/nologo \/W3 \/WX- \/diagnostics:column \/Od \/D CODE_ANALYSIS \/D _DEBUG \/D _CONSOLE \/D _UNICODE \/D UNICODE \/D _WIN32_WINNT=0x0600 \/EHsc \/RTC1 \/MDd \/GS \/fp:precise \/permissive- \/Fo\"x64\\Debug\\\\\" \/Gd \/TP --target=amd64-pc-windows-msvc   \"C:\\Users\\kgbo2\\Downloads\\Development\\Project_Portfolio\\network-monitoring-tool\\network-monitoring-tool\\C_Real_Time_Network_Tool\\main.cpp\"",
+    "file": "C:\\Users\\kgbo2\\Downloads\\Development\\Project_Portfolio\\network-monitoring-tool\\network-monitoring-tool\\C_Real_Time_Network_Tool\\main.cpp"
+  }
+]
