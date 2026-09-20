@@ -15,8 +15,9 @@ Visual Studio (+ Clang-Tidy) + C++ + Nginx (Web Server) & Crow (Web Framework) &
 <img width="1919" height="626" alt="결과2 수정" src="https://github.com/user-attachments/assets/4ef1ce74-ccef-4478-a029-550565489663" /><br><br>
 
 Nginx (Web Server) & Crow (Web Framework) & cpp-httplib (Library)<br>
-<img width="1919" height="907" alt="crow 수정" src="https://github.com/user-attachments/assets/606232a4-1266-470a-bc5c-02992bcee53d" />
-<img width="1919" height="484" alt="crow2" src="https://github.com/user-attachments/assets/f541ce60-8022-4348-98f1-b735e9aa5402" />
+<img width="1920" height="1032" alt="cpp-httplib 코드" src="https://github.com/user-attachments/assets/36deba5b-6dcd-44c8-a729-f3b5f930f3c7" /><br>
+<img width="1919" height="907" alt="crow 수정" src="https://github.com/user-attachments/assets/606232a4-1266-470a-bc5c-02992bcee53d" /><br>
+<img width="1919" height="484" alt="crow2" src="https://github.com/user-attachments/assets/f541ce60-8022-4348-98f1-b735e9aa5402" /><br><br>
 
 Python (Pybind11 - Bridge + Gradio - Web)<br>
 <img width="1916" height="1132" alt="코드 파이썬" src="https://github.com/user-attachments/assets/1639512d-1a17-41c8-a339-a5662ba08c83" /><br>
