@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Native Network Monitor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&display=swap');
+        
+        :root {
+            --bg-color: #030a05;
+            --card-bg: rgba(5, 15, 10, 0.85);
+            --text-main: #33ff33;
+            --text-muted: #1f8a1f;
+            --accent: #00ffcc;
+            --accent-glow: rgba(0, 255, 204, 0.4);
+            --border: #1f8a1f;
+            --danger: #ff0055;
+            --success: #00ffcc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Fira Code', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            background-image: 
+                linear-gradient(rgba(3, 10, 5, 0.9), rgba(3, 10, 5, 0.9)),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, #001100 2px, #001100 4px);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: left;
+            margin-bottom: 50px;
+            border-left: 5px solid var(--accent);
+            padding-left: 20px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+        
+        p.subtitle {
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-size: 1rem;
+        }
+        
+        .blinking-cursor {
+            animation: blink 1s step-end infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 20px;
+            position: relative;
+            box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.05);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 10px; height: 10px;
+            border-top: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+        
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 10px; height: 10px;
+            border-bottom: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--accent);
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .data-label {
+            color: var(--text-muted);
+        }
+
+        .data-label::before {
+            content: "> ";
+            color: var(--accent);
+        }
+
+        .data-value {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .highlight {
+            color: var(--accent);
+            text-shadow: 0 0 5px var(--accent-glow);
+        }
+
+        .loading {
+            text-align: left;
+            color: var(--accent);
+            padding: 20px;
+            font-size: 1.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid rgba(31, 138, 31, 0.3);
+        }
+
+        th {
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .scrollable {
+            max-height: 250px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--bg-color);
+        }
+
+        .scrollable::-webkit-scrollbar {
+            width: 8px;
+        }
+        .scrollable::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-left: 1px solid var(--border);
+        }
+        .scrollable::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>[SYS.MONITOR]<span class="blinking-cursor">_</span></h1>
+        <p class="subtitle">Engine: Pure C++ Native (cpp-httplib) // Mode: Ultra-Low Latency</p>
+    </header>
+
+    <div id="loading" class="loading">ESTABLISHING DIRECT KERNEL CONNECTION...</div>
+
+    <div id="dashboard" class="dashboard" style="display: none;">
+        
+        <div class="card">
+            <h2>Net_Config</h2>
+            <div class="data-row"><span class="data-label">IPv4</span> <span class="data-value highlight" id="val-ipv4">WAIT</span></div>
+            <div class="data-row"><span class="data-label">Subnet</span> <span class="data-value" id="val-subnet">WAIT</span></div>
+            <div class="data-row"><span class="data-label">Gateway</span> <span class="data-value" id="val-gateway">WAIT</span></div>
+            <div class="data-row"><span class="data-label">MAC</span> <span class="data-value" id="val-mac">WAIT</span></div>
+            <div class="data-row"><span class="data-label">DNS</span> <span class="data-value" id="val-dns">WAIT</span></div>
+        </div>
+
+        <div class="card">
+            <h2>Throughput</h2>
+            <div class="data-row"><span class="data-label">Download</span> <span class="data-value highlight" id="val-download" style="color: #00ffcc;">WAIT</span></div>
+            <div class="data-row"><span class="data-label">Upload</span> <span class="data-value highlight" id="val-upload" style="color: #ff0055;">WAIT</span></div>
+            <div class="data-row" style="margin-top: 20px;"><span class="data-label">Latency (Ping)</span> <span class="data-value" id="val-ping">WAIT</span></div>
+        </div>
+
+        <div class="card">
+            <h2>Packet_Stats</h2>
+            <div class="data-row"><span class="data-label">RX Packets</span> <span class="data-value" id="val-inPackets">WAIT</span></div>
+            <div class="data-row"><span class="data-label">TX Packets</span> <span class="data-value" id="val-outPackets">WAIT</span></div>
+            <div class="data-row"><span class="data-label">RX Errors</span> <span class="data-value" id="val-inErrors">WAIT</span></div>
+            <div class="data-row"><span class="data-label">TX Errors</span> <span class="data-value" id="val-outErrors">WAIT</span></div>
+            <div class="data-row"><span class="data-label">Loss Rate</span> <span class="data-value highlight" id="val-lossRate">WAIT</span></div>
+        </div>
+
+        <div class="card">
+            <h2>Socket_Pool</h2>
+            <div class="data-row"><span class="data-label">Active TCP</span> <span class="data-value" id="val-tcpCount">WAIT</span></div>
+            <div class="data-row"><span class="data-label">Active UDP</span> <span class="data-value" id="val-udpCount">WAIT</span></div>
+        </div>
+
+        <div class="card full-width">
+            <h2>Hardware_Interfaces</h2>
+            <div class="scrollable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Interface Name</th>
+                            <th>Status</th>
+                            <th>Speed_Mbps</th>
+                        </tr>
+                    </thead>
+                    <tbody id="interfaces-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <h2>Process_Bindings</h2>
+            <div class="scrollable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PID</th>
+                            <th>Executable_Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="processes-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    async function fetchData() {
+        try {
+            const response = await fetch('/api/network-data');
+            const data = await response.json();
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'grid';
+
+            const keys = ['ipv4', 'subnet', 'gateway', 'mac', 'dns', 'download', 'upload', 'ping', 'inPackets', 'outPackets', 'inErrors', 'outErrors', 'tcpCount', 'udpCount'];
+            
+            keys.forEach(key => {
+                if (document.getElementById('val-' + key)) {
+                    document.getElementById('val-' + key).textContent = data[key];
+                }
+            });
+
+            document.getElementById('val-lossRate').textContent = data.lossRate + '%';
+            
+            const ifaceTbody = document.getElementById('interfaces-tbody');
+            ifaceTbody.innerHTML = '';
+            if (data.interfaces && data.interfaces.length > 0) {
+                data.interfaces.forEach(iface => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${iface.name}</td>
+                        <td style="color: ${iface.status === 'Operational' ? '#00ffcc' : '#ff0055'}">[${iface.status}]</td>
+                        <td>${iface.speed_mbps}</td>
+                    `;
+                    ifaceTbody.appendChild(row);
+                });
+            }
+
+            const procTbody = document.getElementById('processes-tbody');
+            procTbody.innerHTML = '';
+            if (data.processes && data.processes.length > 0) {
+                data.processes.forEach(proc => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${proc.pid}</td>
+                        <td>${proc.name}</td>
+                    `;
+                    procTbody.appendChild(row);
+                });
+            }
+            
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+            document.getElementById('loading').textContent = "ERROR: KERNEL CONNECTION FAILED.";
+        }
+    }
+
+    fetchData();
+    setInterval(fetchData, 8000);
+</script>
+
+</body>
+</html>
