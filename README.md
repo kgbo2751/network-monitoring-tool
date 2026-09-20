@@ -1,4 +1,4 @@
-Visual Studio (+ Clang-Tidy) + C++ + Windows API (Win32 API, IP Helper, Winsock) + HTML/CSS/JavaScript + Java (JNA - Bridge, Thymeleaf - Web) + Python (Pybind11 - Bridge + Gradio - Web)<br>
+Visual Studio (+ Clang-Tidy) + C++ + Nginx (Web Server) & Crow (Web Framework) & cpp-httplib (Library) + Windows API (Win32 API, IP Helper, Winsock) + HTML/CSS/JavaScript + Java (JNA - Bridge, Thymeleaf - Web) + Python (Pybind11 - Bridge + Gradio - Web)<br>
 <img width="1919" height="1026" alt="구조" src="https://github.com/user-attachments/assets/7cc15b02-1b2f-442f-ad67-ddc3e899b02c" /><br><br>
 
 • API<br>
@@ -13,6 +13,10 @@ Visual Studio (+ Clang-Tidy) + C++ + Windows API (Win32 API, IP Helper, Winsock)
 프로세스별 네트워크 사용량 (iphlpapi.lib, psapi.lib)<br>
 <img width="1919" height="1028" alt="결과" src="https://github.com/user-attachments/assets/3967a0fc-6cd1-4402-a3c3-463f9891bf0f" /><br>
 <img width="1919" height="626" alt="결과2 수정" src="https://github.com/user-attachments/assets/4ef1ce74-ccef-4478-a029-550565489663" /><br><br>
+
+Nginx (Web Server) & Crow (Web Framework) & cpp-httplib (Library)<br>
+<img width="1919" height="907" alt="crow 수정" src="https://github.com/user-attachments/assets/606232a4-1266-470a-bc5c-02992bcee53d" />
+<img width="1919" height="484" alt="crow2" src="https://github.com/user-attachments/assets/f541ce60-8022-4348-98f1-b735e9aa5402" />
 
 Python (Pybind11 - Bridge + Gradio - Web)<br>
 <img width="1916" height="1132" alt="코드 파이썬" src="https://github.com/user-attachments/assets/1639512d-1a17-41c8-a339-a5662ba08c83" /><br>
